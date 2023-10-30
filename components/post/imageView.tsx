@@ -2,11 +2,11 @@
 import { Skeleton } from '@/components/ui/skeleton'
 import React, { Suspense, useEffect, useState } from 'react'
 import ReactImageGallery, { ReactImageGalleryItem } from "react-image-gallery";
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import "react-image-gallery/styles/css/image-gallery.css";
 import "./overrideCarousel.css"
 import { FileObject } from '@supabase/storage-js'
 import { PostType } from '../../app/supabaseDbTypes';
+import { SupabaseClient } from '@supabase/auth-helpers-nextjs';
 
 // const images = [
 //   {
@@ -20,12 +20,10 @@ import { PostType } from '../../app/supabaseDbTypes';
 //   },
 // ];
 
-export default function ImageView({post}:{post: PostType}) {
-
+export default function ImageView({post,currentUser, supabase }:{post:PostType , currentUser:string, supabase: SupabaseClient}) {
 const [navShown,setNavShown] = useState(false)
 const [downloadedImages,setDownloadedImages] = useState<ReactImageGalleryItem[]>([])
 
-const supabase = createClientComponentClient()
 let imagesUrls : string[] = []
 let imgItems : ReactImageGalleryItem[] =[];
 let imageCount = 0;

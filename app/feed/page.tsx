@@ -6,22 +6,19 @@ import Post from '../../components/post/post'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { PostType } from "../supabaseDbTypes";
 
-const supabase = createClientComponentClient()
 const resultsPerPage = 2
 let currentPage = 1
 let totalCount = 0; 
 
 export default function Page() {
+const supabase = createClientComponentClient()
+
 const [posts, setPosts] = useState<PostType[]>([]) 
+const [currentUser, setCurrentUser] = useState<string>("public")
 
 async function fetchMorePosts(page: number, count: number) { 
-    //console.log("fetching...")
-    //console.log("count:"+ count)
-    //console.log("page: " + page)
     const min = resultsPerPage * page - resultsPerPage
-    //console.log("min: "+ min)
     const max = Math.min(resultsPerPage * page -1,count -1)
-    //console.log("max: "+ max)
     const { data, error } = await supabase
     .from('posts')
     .select()
@@ -41,9 +38,18 @@ async function getCount(){
     totalCount = count!
     fetchMorePosts(1, totalCount)
 }
+    
+async function getUser(){ 
+    const { data } = await supabase.auth.getUser()
+    return data.user?.id || 'public'
+}
 
 useEffect(()=>{
     getCount()
+    const getUserId = async () => {
+        setCurrentUser(await getUser());
+        }
+    getUserId()
 },[])
 
 return (
@@ -54,7 +60,7 @@ return (
     hasMore={posts.length < totalCount}
     loader={<div className="loader" key={0}>Loading ...</div>}>
         {posts.map((postData :PostType, index:number) => (
-        <Post key={index} post={postData}/>
+        <Post key={index} post={postData} currentUser={currentUser} supabase={supabase}/>
         ))}
     </InfiniteScroll>
     </div>

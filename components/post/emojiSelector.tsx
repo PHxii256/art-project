@@ -9,7 +9,7 @@ function removeDuplicates(arr: any[]) {
 } 
 
 export function EmojiSelector({post, currentUser, supabase}:{post:PostType ,currentUser: string , supabase : SupabaseClient}) {
-  let currentTimeout: NodeJS.Timeout | null;
+  const [currentTimeout, setCurrentTimeout] = useState<NodeJS.Timeout | null>(null)
   const [currentEmojis, setCurrentEmojis] = useState<string[]>([]) 
   const [uniqueEmojis, setUniqueEmojis] = useState<string[]>([]) //used as a trigger for rerendering children
   const [aggregatedEmojis, setAggregatedEmojis] = useState<string[]>([]) //existing emojis with duplicates used to pass down the count of each emoji
@@ -20,10 +20,11 @@ export function EmojiSelector({post, currentUser, supabase}:{post:PostType ,curr
     tempEmojis.includes(emoji) ? tempEmojis.splice(tempEmojis.indexOf(emoji),1) : tempEmojis.push(emoji)
 
     if(currentTimeout != null) {clearTimeout(currentTimeout)}
-    currentTimeout = setTimeout(function () {
+    const timeout = setTimeout(function () {
       if(tempEmojis.length > 0) writeReactions()
       else deleteReactions()
     }, 3000)
+    setCurrentTimeout(timeout)
   }
 
   async function writeReactions (){

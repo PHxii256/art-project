@@ -1,31 +1,16 @@
 import { EmojiSelector } from './emojiSelector';
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SmilePlus, PencilLine, AlertTriangle } from 'lucide-react';
 
 import Feedback from './feedback';
 import Report from './report';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { PostType } from '../../app/supabaseDbTypes';
+import { SupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { PostType } from '@/app/supabaseDbTypes';
 
-const supabase = createClientComponentClient()
 
-export default function Actions({post}:{post: PostType}) {
-    const [currentUser, setCurrentUser] = useState<string>("public")
-    
-    async function getUser(){ 
-        const { data } = await supabase.auth.getUser()
-        return data.user?.id || 'public'
-    }
+export default function Actions({post,currentUser, supabase }:{post:PostType , currentUser:string, supabase: SupabaseClient}) {
 
-    useEffect(()=>{
-        const getUserId = async () => {
-          setCurrentUser(await getUser());
-          console.log("current user: " + currentUser)
-          }
-          getUserId()
-      },[])
-      
   return (
     <Tabs defaultValue="react" className="w-[100%] overflow-clip">
         <TabsList>
