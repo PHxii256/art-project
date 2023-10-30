@@ -26,7 +26,7 @@ import FilepondPluginImageSizeMetadata from './filepond-plugin-image-size-metada
 import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
-import { PostType } from '../supabaseDbTypes';
+import { PostType } from '../app/supabaseDbTypes';
 import { FilePondFile } from 'filepond';
 
 // Register the plugins

@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import InfiniteScroll from 'react-infinite-scroller';
-import Post from '../postComponents/post'
+import Post from '../../components/post/post'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { PostType } from "../supabaseDbTypes";
 
@@ -54,7 +54,7 @@ return (
     hasMore={posts.length < totalCount}
     loader={<div className="loader" key={0}>Loading ...</div>}>
         {posts.map((postData :PostType, index:number) => (
-        <Post key={index} postObj={{postType: postData}}/>
+        <Post key={index} post={postData}/>
         ))}
     </InfiniteScroll>
     </div>

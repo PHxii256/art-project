@@ -1,13 +1,31 @@
 import { EmojiSelector } from './emojiSelector';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SmilePlus, PencilLine, AlertTriangle } from 'lucide-react';
 
 import Feedback from './feedback';
 import Report from './report';
-import { postPropsObj } from './types';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { PostType } from '../../app/supabaseDbTypes';
 
-export default function Actions({postObj}:postPropsObj) {
+const supabase = createClientComponentClient()
+
+export default function Actions({post}:{post: PostType}) {
+    const [currentUser, setCurrentUser] = useState<string>("public")
+    
+    async function getUser(){ 
+        const { data } = await supabase.auth.getUser()
+        return data.user?.id || 'public'
+    }
+
+    useEffect(()=>{
+        const getUserId = async () => {
+          setCurrentUser(await getUser());
+          console.log("current user: " + currentUser)
+          }
+          getUserId()
+      },[])
+      
   return (
     <Tabs defaultValue="react" className="w-[100%] overflow-clip">
         <TabsList>
@@ -28,10 +46,10 @@ export default function Actions({postObj}:postPropsObj) {
 
         </TabsList>
         <TabsContent value="react">
-            <EmojiSelector postObj={postObj} />
+            <EmojiSelector post={post} currentUser={currentUser} supabase={supabase}/>
         </TabsContent>
         <TabsContent value="feedback">
-            <Feedback/>
+            <Feedback  post={post} currentUser={currentUser} supabase={supabase}/>
         </TabsContent>
         <TabsContent value="report">
             <Report/>

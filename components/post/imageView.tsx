@@ -1,13 +1,12 @@
 "use client"
 import { Skeleton } from '@/components/ui/skeleton'
 import React, { Suspense, useEffect, useState } from 'react'
-import { postPropsObj } from './types'
-import Image from 'next/image'
 import ReactImageGallery, { ReactImageGalleryItem } from "react-image-gallery";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import "react-image-gallery/styles/css/image-gallery.css";
 import "./overrideCarousel.css"
 import { FileObject } from '@supabase/storage-js'
+import { PostType } from '../../app/supabaseDbTypes';
 
 // const images = [
 //   {
@@ -21,7 +20,7 @@ import { FileObject } from '@supabase/storage-js'
 //   },
 // ];
 
-export default function ImageView({postObj}:postPropsObj) {
+export default function ImageView({post}:{post: PostType}) {
 
 const [navShown,setNavShown] = useState(false)
 const [downloadedImages,setDownloadedImages] = useState<ReactImageGalleryItem[]>([])
@@ -37,7 +36,7 @@ useEffect(()=>{
 
 async function downloadImages() {
     const { data, error } = await supabase.storage.from('avatars')
-    .list(`${postObj.postType.user_id!}/${postObj.postType.post_id}`, {
+    .list(`${post.user_id!}/${post.post_id}`, {
         limit: 6,
         offset: 0})
     if(data){
@@ -54,7 +53,7 @@ async function downloadImages() {
     const { data, error } = await supabase
     .storage
     .from('avatars')
-    .download(`${postObj.postType.user_id}/${postObj.postType.post_id}/${image.name}`)
+    .download(`${post.user_id}/${post.post_id}/${image.name}`)
 
     if(data){
         const objectURL = URL.createObjectURL(data!);
@@ -77,7 +76,7 @@ async function downloadImages() {
   return (
     <div className={`w-auto mx-2 mt-1 mb-1 bg-zinc-950 flex rounded-md relative overflow-clip`} 
          onMouseEnter={()=>setNavShown(true)} onMouseLeave={()=>setNavShown(false)} 
-         style={{aspectRatio: postObj.postType.view_aspect_ratio}}>
+         style={{aspectRatio: post.view_aspect_ratio}}>
         <Suspense fallback={<Skeleton className="w-full rounded-md contrast-125 saturate-0"/>}>
             <div className='flex flex-col justify-center'>
               <ReactImageGallery items={downloadedImages} 

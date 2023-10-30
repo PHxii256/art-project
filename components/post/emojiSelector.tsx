@@ -1,18 +1,15 @@
 import React , {useEffect, useState}from "react";
 import EmojiChip from "./emojiChip";
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { postPropsObj } from "./types";
-
-const supabase = createClientComponentClient()
+import { PostType } from "../../app/supabaseDbTypes";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 function removeDuplicates(arr: any[]) { 
   return arr.filter((item, 
       index) => arr.indexOf(item) === index); 
 } 
 
-export function EmojiSelector({postObj}:postPropsObj) {
+export function EmojiSelector({post, currentUser, supabase}:{post:PostType ,currentUser: string , supabase : SupabaseClient}) {
   let currentTimeout: NodeJS.Timeout | null;
-  let currentUser = "public";
   const [currentEmojis, setCurrentEmojis] = useState<string[]>([]) 
   const [uniqueEmojis, setUniqueEmojis] = useState<string[]>([]) //used as a trigger for rerendering children
   const [aggregatedEmojis, setAggregatedEmojis] = useState<string[]>([]) //existing emojis with duplicates used to pass down the count of each emoji
@@ -29,19 +26,14 @@ export function EmojiSelector({postObj}:postPropsObj) {
     }, 3000)
   }
 
-  async function getUser(){ 
-    const { data } = await supabase.auth.getUser()
-    return data.user?.id || 'public'
-  }
-
   async function writeReactions (){
-    console.log("written: " + currentEmojis  + " For postId: " + postObj.postType.post_id)
+    console.log("written: " + currentEmojis  + " For postId: " + post.post_id)
     const { error } = await supabase
     .from('posts_reactions')
     .upsert({
-    reaction_id: postObj.postType.post_id+"/"+currentUser, 
+    reaction_id: post.post_id+"/"+currentUser, 
     reactions: currentEmojis, 
-    post_id:postObj.postType.post_id})
+    post_id: post.post_id})
     if(error) console.log(error)
   }
 
@@ -50,7 +42,7 @@ export function EmojiSelector({postObj}:postPropsObj) {
     const { error } = await supabase
     .from('posts_reactions')
     .delete()
-    .eq('reaction_id', postObj.postType.post_id +"/"+currentUser)
+    .eq('reaction_id', post.post_id +"/"+currentUser)
     if(error) console.log(error)
   }
   
@@ -58,7 +50,7 @@ export function EmojiSelector({postObj}:postPropsObj) {
     const { data, error } = await supabase
    .from('posts_reactions')
    .select('reactions')
-   .eq('post_id', postObj.postType.post_id)
+   .eq('post_id', post.post_id)
    if(error) console.log(error)
    if(data){
       const tempArray :string[] = [];
@@ -75,12 +67,6 @@ export function EmojiSelector({postObj}:postPropsObj) {
 
   useEffect(()=>{
     fetchReactions();
-    const getUserId = async () => {
-      currentUser = await getUser();
-      console.log("current user: " + currentUser)
-      }
-      // call the function
-      getUserId()
   },[])
 
   return (

@@ -1,6 +1,6 @@
 "use client"
 import React from 'react'
-import Uploader from '../testing/uploader'
+import Uploader from '../../components/uploader'
 export default function Page() {
   return (
     <div className='m-4'>
