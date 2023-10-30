@@ -73,7 +73,12 @@ export function EmojiSelector({post, currentUser, supabase}:{post:PostType ,curr
   <div className='w-full h-8 flex flex-row space-x-1'>
     {
     uniqueEmojis.map((emoji, i) =>
-        <EmojiChip key={i} emoji={emoji} count={aggregatedEmojis.filter((e) => e == emoji).length} reacted={aggregatedEmojis.includes(emoji)} timeout={timeout}/>
+        <EmojiChip 
+        key={i} 
+        emoji={emoji} 
+        count={aggregatedEmojis.filter((e) => e == emoji).length} 
+        reacted={aggregatedEmojis.includes(emoji)} 
+        timeout={timeout}/>
       )
     }
   </div>

@@ -52,7 +52,7 @@ export default function Actions({post}:{post: PostType}) {
             <Feedback  post={post} currentUser={currentUser} supabase={supabase}/>
         </TabsContent>
         <TabsContent value="report">
-            <Report/>
+            <Report post={post} currentUser={currentUser} supabase={supabase}/>
         </TabsContent>
     </Tabs>
   )
